@@ -1,370 +1,308 @@
-import gsap from 'gsap';
-import { TextPlugin } from 'gsap/all';
-import { ScrollTrigger } from 'gsap/all';
-import Matter from 'matter-js';
+import gsap from "gsap";
+import { TextPlugin } from "gsap/all";
 
-gsap.registerPlugin(ScrollTrigger);
 gsap.registerPlugin(TextPlugin);
 
-document.addEventListener('DOMContentLoaded', () => {
-  const introWords = [
-    `Hi! My name is Daniil Kamaev.`,
-    `I'm a student.`,
-    `I'm an amateur game developer.`,
-    `I'm a frontend developer.`
-  ];
-  gsap.to('.pop', {
-    opacity: 0,
-    yoyo: true,
-    repeat: -1,
-    ease: 'power2.inOut'
-  });
+// ============================================
+// ТЕРМИНАЛ — ВЕСЬ КОНТЕНТ ЧЕРЕЗ КОМАНДЫ
+// ============================================
 
-  const wordsMainTl = gsap.timeline({ repeat: -1 });
+const terminalScript = [
+  {
+    type: "command",
+    text: "init hello",
+    output: [
+      "Hello! My name is Daniil Kamaev.",
+      "I'm a student.",
+      "I'm an amateur game developer.",
+      "I'm a frontend developer.",
+    ],
+  },
+  {
+    type: "command",
+    text: "show skills",
+    output: [
+      "JavaScript / TypeScript",
+      "React / Next.js",
+      "Three.js / GSAP",
+      "Matter.js / Lenis",
+    ],
+  },
+  {
+    type: "command",
+    text: "experience",
+    output: [
+      '2017 — Начало пути: print("Hello world!")',
+      "2022 — МГБОУ Колледж Царицыно (с отличием)",
+      "2023 — НИЯУ МЭИ (до 2027)",
+      "2024 — Яндекс Практикум",
+      "2025 — Three.js, шейдеры, моды для игр",
+    ],
+  },
+  {
+    type: "command",
+    text: "projects",
+    output: [
+      "Type cd ./projects/{project} for more info",
+      "Draggable Works — бесконечный охват проектов",
+      "Fiction Sandbox — наработки с анимациями",
+      "Course Work Loft — дипломный проект, он не закончен, но дорог мне как память"
+    ],
+  },
+  {
+    type: "command",
+    text: "contact",
+    output: [
+      "Type cd ./projects/{contact} for more info",
+      "GitHub: github.com/V1lliarddd",
+      "LeetCode: leetcode.com/u/V1lliard/",
+      "HH: резюме на hh.ru",
+      "Email: daniil@example.com",
+    ],
+  },
+  {
+    type: "command",
+    text: "help",
+    output: [
+      "Доступные команды:",
+      "  init hello     — приветствие",
+      "  show skills    — список технологий",
+      "  experience     — мой путь в IT",
+      "  projects       — мои проекты",
+      "  contact        — контакты",
+      "  help           — эта справка",
+      "  clear          — очистить терминал",
+      "  whoami         — информация обо мне",
+    ],
+  },
+  {
+    type: "command",
+    text: "whoami",
+    output: [
+      "Daniil Kamaev",
+      "Moscow, Russia",
+      "Frontend Developer & Game Dev Enthusiast",
+      "Люблю создавать интерактивные интерфейсы",
+      "Изучаю Three.js и физические движки",
+    ],
+  },
+];
 
-  introWords.forEach((word) => {
-    let tl = gsap
-      .timeline({ repeat: 1, yoyo: true, repeatDelay: 1 })
-      .to('.role', { duration: 1, text: word });
-    wordsMainTl.add(tl);
-  });
+let commandHistory = [];
+let historyIndex = -1;
+let isUserInputActive = false;
 
-  const cardsTl = gsap.timeline();
-  const aboutCards = document.querySelectorAll('.card');
+const terminalBody = document.getElementById("terminalBody");
 
-  const sectorsData = [
-    {
-      number: 0,
-      name: 'Как все начиналось?',
-      description: 'Началось все в 7 классе с написания print("Hello world!")'
-    },
-    {
-      number: 25,
-      name: 'Колледж',
-      description: 'МГБОУ Колледж Царицыно. Окончил с отличием.'
-    },
-    {
-      number: 50,
-      name: 'Высшее учебное заведение',
-      description: 'НИЯУ МЭИ. Заканчиваю в 2027 году.'
-    },
-    {
-      number: 75,
-      name: 'Курсы',
-      description:
-        'Яндекс Практикум, Курс ThreeJS и много просмотренный гайдов на ютубе.'
-    },
-    {
-      number: 100,
-      name: 'Что-нибудь еще?',
-      description: 'Конечно! Также был опыт написания шейдеров и модов для игр.'
+function typeText(element, text, speed = 15, callback) {
+  let index = 0;
+  element.textContent = "";
+
+  function type() {
+    if (index < text.length) {
+      element.textContent += text[index];
+      index++;
+      setTimeout(type, speed);
+    } else if (callback) {
+      callback();
     }
-  ];
-
-  const numberSpan = document.getElementById('sector-number');
-  const nameSpan = document.getElementById('sector-name');
-  const descSpan = document.getElementById('sector-description');
-
-  let currentIndex = 0;
-  let isAnimating = false;
-
-  function animateNumber(element, start, end, duration = 0.8) {
-    gsap.to(
-      { val: start },
-      {
-        val: end,
-        duration: duration,
-        ease: 'power2.out',
-        onUpdate: function () {
-          element.textContent = Math.floor(this.targets()[0].val);
-        },
-        onComplete: () => {
-          isAnimating = false;
-        }
-      }
-    );
   }
 
-  function updateSector(index) {
-    if (isAnimating) return;
-    if (index === currentIndex) return;
+  type();
+}
 
-    isAnimating = true;
-    const newSector = sectorsData[index];
-    const oldNumber = parseInt(numberSpan.textContent);
+function executeCommand(command, outputLines, delay = 200) {
+  return new Promise((resolve) => {
+    const commandLine = document.createElement("div");
+    commandLine.className = "terminal-line";
+    commandLine.innerHTML = `
+      <span class="prompt">
+        <span class="path">root@portfolio</span>:<span class="symbol">~$</span>
+      </span>
+      <span class="command"></span>
+    `;
+    terminalBody.appendChild(commandLine);
 
-    animateNumber(numberSpan, oldNumber, newSector.number);
+    const commandSpan = commandLine.querySelector(".command");
 
-    gsap.to([nameSpan, descSpan], {
-      opacity: 0,
-      duration: 0.2,
-      onComplete: () => {
-        nameSpan.textContent = newSector.name;
-        descSpan.textContent = newSector.description;
-        gsap.to([nameSpan, descSpan], {
-          opacity: 1,
-          duration: 0.4,
-          delay: 0.1
+    typeText(commandSpan, command, 40, () => {
+      setTimeout(() => {
+        outputLines.forEach((line, index) => {
+          setTimeout(() => {
+            const outputLine = document.createElement("div");
+            outputLine.className = "terminal-line command-output";
+            outputLine.textContent = line;
+            terminalBody.appendChild(outputLine);
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+
+            if (index === outputLines.length - 1) {
+              resolve();
+            }
+          }, index * 200);
         });
-      }
+      }, 200);
     });
+  });
+}
 
-    currentIndex = index;
-  }
+function createUserPrompt() {
+  const promptLine = document.createElement("div");
+  promptLine.className = "terminal-line";
+  promptLine.innerHTML = `
+    <span class="prompt">
+      <span class="path">root@portfolio</span>:<span class="symbol">~$</span>
+    </span>
+    <span class="command-input"></span>
+  `;
+  terminalBody.appendChild(promptLine);
+  terminalBody.scrollTop = terminalBody.scrollHeight;
 
-  ScrollTrigger.create({
-    trigger: '.sectors-scene',
-    start: 'top top',
-    end: '+=300%',
-    pin: '.sectors-scene',
-    scrub: 0.8,
-    onUpdate: (self) => {
-      let newIndex = Math.floor(self.progress * sectorsData.length);
-      newIndex = Math.min(newIndex, sectorsData.length - 1);
-      updateSector(newIndex);
+  const inputSpan = promptLine.querySelector(".command-input");
+  setupCommandInput(inputSpan);
+}
+
+function setupCommandInput(inputSpan) {
+  isUserInputActive = true;
+  inputSpan.contentEditable = true;
+
+  const focusHandler = () => {
+    inputSpan.focus();
+  };
+  terminalBody.addEventListener("click", focusHandler);
+
+  setTimeout(() => inputSpan.focus(), 50);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const command = inputSpan.textContent.trim();
+
+      if (command === "") return;
+
+      commandHistory.push(command);
+      historyIndex = commandHistory.length;
+
+      isUserInputActive = false;
+
+      inputSpan.removeEventListener("keydown", handleKeyDown);
+      inputSpan.removeEventListener("keyup", handleKeyUp);
+      terminalBody.removeEventListener("click", focusHandler);
+
+      inputSpan.contentEditable = false;
+
+      handleUserCommand(command, inputSpan);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        historyIndex--;
+        inputSpan.textContent = commandHistory[historyIndex];
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.selectNodeContents(inputSpan);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (historyIndex < commandHistory.length - 1) {
+        historyIndex++;
+        inputSpan.textContent = commandHistory[historyIndex];
+      } else {
+        historyIndex = commandHistory.length;
+        inputSpan.textContent = "";
+      }
     }
+  };
+
+  const handleKeyUp = () => {};
+
+  inputSpan.addEventListener("keydown", handleKeyDown);
+  inputSpan.addEventListener("keyup", handleKeyUp);
+
+  inputSpan.addEventListener("paste", (e) => {
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData("text");
+    document.execCommand("insertText", false, text);
   });
-  updateSector(0);
-});
+}
 
-let engine = null;
-let bodies = [];
-let animationId = null;
-let topWall = null;
-let isPhysicsRunning = false;
+function handleUserCommand(command, inputSpan) {
+  const found = terminalScript.find((cmd) => cmd.text === command);
 
-const CONFIG = {
-  gravity: { x: 0, y: 1, scale: 0.001 },
-  wallThickness: 50,
-  restitution: 0.7,
-  friction: 0.1,
-  frictionAir: 0.01,
-  density: 0.001
-};
+  if (found) {
+    const outputLines = found.output;
 
-ScrollTrigger.create({
-  trigger: '.sandbox',
-  start: 'bottom -150%',
-  once: true,
-  onEnter: () => {
     setTimeout(() => {
-      const container = document.querySelector('.object-container');
-      const objects = document.querySelectorAll('.object');
-      objects.forEach((obj) => {
-        obj.style.opacity = 1;
+      outputLines.forEach((line, index) => {
+        setTimeout(() => {
+          const outputLine = document.createElement("div");
+          outputLine.className = "terminal-line command-output";
+          outputLine.textContent = line;
+          terminalBody.appendChild(outputLine);
+          terminalBody.scrollTop = terminalBody.scrollHeight;
+
+          if (index === outputLines.length - 1) {
+            setTimeout(() => {
+              createUserPrompt();
+            }, 300);
+          }
+        }, index * 150);
       });
-      if (container && !isPhysicsRunning) {
-        initPhysics(container);
-        isPhysicsRunning = true;
-      }
-    }, 100);
-  }
-});
+    }, 200);
+  } else if (command === "clear") {
+    const lines = terminalBody.querySelectorAll(".terminal-line");
+    lines.forEach((line) => line.remove());
 
-function initPhysics(container) {
-  if (typeof Matter === 'undefined') {
+    setTimeout(() => {
+      createUserPrompt();
+    }, 200);
+  } else {
+    const outputLine = document.createElement("div");
+    outputLine.className = "terminal-line command-output";
+    outputLine.style.color = "#ff5f56";
+    outputLine.textContent = `Command not found: ${command}. Type 'help' for available commands.`;
+    terminalBody.appendChild(outputLine);
+    terminalBody.scrollTop = terminalBody.scrollHeight;
+
+    setTimeout(() => {
+      createUserPrompt();
+    }, 300);
+  }
+}
+
+async function loadTerminal() {
+  if (!terminalBody) {
+    console.error("Terminal body not found!");
     return;
   }
 
-  if (!container) {
-    return;
+  const welcomeLine = document.createElement("div");
+  welcomeLine.className = "terminal-line";
+  welcomeLine.style.color = "#4a9eff";
+  welcomeLine.style.marginBottom = "16px";
+  welcomeLine.textContent =
+    "Welcome to Daniil Kamaev's Portfolio Terminal v1.0";
+  terminalBody.appendChild(welcomeLine);
+
+  const helpLine = document.createElement("div");
+  helpLine.className = "terminal-line";
+  helpLine.style.color = "#888";
+  helpLine.style.marginBottom = "16px";
+  helpLine.textContent = 'Type "help" to see available commands.';
+  terminalBody.appendChild(helpLine);
+
+  for (const step of terminalScript) {
+    if (step.text === "init hello" || step.text === "whoami") {
+      await executeCommand(step.text, step.output, step.delay || 200);
+    }
   }
-
-  const containerRect = container.getBoundingClientRect();
-
-  if (containerRect.width === 0 || containerRect.height === 0) {
-    const computedStyle = window.getComputedStyle(container);
-    const width = parseInt(computedStyle.width) || window.innerWidth;
-    const height = parseInt(computedStyle.height) || 400;
-    containerRect.width = width;
-    containerRect.height = height;
-  }
-
-  engine = Matter.Engine.create();
-  engine.gravity = CONFIG.gravity;
-  engine.constraintIterations = 10;
-  engine.positionIterations = 20;
-  engine.velocityIterations = 16;
-  engine.timing.timeScale = 1;
-
-  const wallThickness = CONFIG.wallThickness;
-
-  if (engine.world.bodies.length === 0) {
-    const walls = [
-      Matter.Bodies.rectangle(
-        containerRect.width / 2,
-        containerRect.height + wallThickness / 2,
-        containerRect.width + wallThickness * 2,
-        wallThickness,
-        {
-          isStatic: true,
-          restitution: 0.5,
-          label: 'ground'
-        }
-      ),
-      Matter.Bodies.rectangle(
-        -wallThickness / 2,
-        containerRect.height / 2,
-        wallThickness,
-        containerRect.height + wallThickness * 2,
-        {
-          isStatic: true,
-          restitution: 0.5,
-          label: 'leftWall'
-        }
-      ),
-      Matter.Bodies.rectangle(
-        containerRect.width + wallThickness / 2,
-        containerRect.height / 2,
-        wallThickness,
-        containerRect.height + wallThickness * 2,
-        {
-          isStatic: true,
-          restitution: 0.5,
-          label: 'rightWall'
-        }
-      )
-    ];
-
-    Matter.World.add(engine.world, walls);
-  }
-  const objects = container.querySelectorAll('.object');
-
-  bodies = [];
-
-  objects.forEach((obj, index) => {
-    let objRect = obj.getBoundingClientRect();
-
-    const startX =
-      Math.random() * (containerRect.width - objRect.width) + objRect.width / 2;
-    const startY = -500 - index * 150;
-    const startRotation = (Math.random() - 0.5) * Math.PI;
-
-    const body = Matter.Bodies.rectangle(
-      startX,
-      startY,
-      objRect.width,
-      objRect.height,
-      {
-        restitution: CONFIG.restitution,
-        friction: CONFIG.friction,
-        frictionAir: CONFIG.frictionAir,
-        density: CONFIG.density,
-        label: `object_${index}`
-      }
-    );
-
-    Matter.Body.setAngle(body, startRotation);
-
-    bodies.push({
-      body,
-      element: obj,
-      width: objRect.width,
-      height: objRect.height
-    });
-
-    Matter.World.add(engine.world, body);
-  });
 
   setTimeout(() => {
-    if (engine && engine.world) {
-      topWall = Matter.Bodies.rectangle(
-        containerRect.width / 2,
-        -wallThickness / 2,
-        containerRect.width + wallThickness * 2,
-        wallThickness,
-        {
-          isStatic: true,
-          restitution: 0.5,
-          label: 'ceiling'
-        }
-      );
-      Matter.World.add(engine.world, topWall);
-    }
-  }, 3000);
-
-  startAnimation();
-  startPhysicsLoop();
+    createUserPrompt();
+  }, 500);
 }
 
-function startAnimation() {
-  function updatePositions() {
-    if (!bodies.length) return;
-
-    bodies.forEach(({ body, element, width, height }) => {
-      const { x, y } = body.position;
-      const angle = body.angle;
-      element.style.left = `${x - width / 2}px`;
-      element.style.top = `${y - height / 2}px`;
-      element.style.transform = `rotate(${angle}rad)`;
-    });
-
-    requestAnimationFrame(updatePositions);
-  }
-
-  updatePositions();
-}
-
-function startPhysicsLoop() {
-  function physicsUpdate() {
-    if (engine) {
-      Matter.Engine.update(engine, 1000 / 60);
-      requestAnimationFrame(physicsUpdate);
-    }
-  }
-
-  physicsUpdate();
-}
-
-window.addEventListener('resize', () => {
-  if (engine && engine.world) {
-    const container = document.querySelector('.object-container');
-    if (container) {
-      const containerRect = container.getBoundingClientRect();
-      const wallThickness = CONFIG.wallThickness;
-
-      const walls = engine.world.bodies.filter(
-        (body) =>
-          body.isStatic &&
-          (body.label === 'ground' ||
-            body.label === 'leftWall' ||
-            body.label === 'rightWall')
-      );
-
-      if (walls.length >= 3) {
-        Matter.Body.setPosition(
-          walls[0],
-          Matter.Vector.create(
-            containerRect.width / 2,
-            containerRect.height + wallThickness / 2
-          )
-        );
-
-        Matter.Body.setPosition(
-          walls[1],
-          Matter.Vector.create(-wallThickness / 2, containerRect.height / 2)
-        );
-
-        Matter.Body.setPosition(
-          walls[2],
-          Matter.Vector.create(
-            containerRect.width + wallThickness / 2,
-            containerRect.height / 2
-          )
-        );
-      }
-    }
-  }
+document.addEventListener("DOMContentLoaded", () => {
+  loadTerminal();
 });
-
-function cleanupPhysics() {
-  if (animationId) {
-    cancelAnimationFrame(animationId);
-  }
-  if (engine) {
-    Matter.Engine.clear(engine);
-    engine = null;
-  }
-  bodies = [];
-  isPhysicsRunning = false;
-}
