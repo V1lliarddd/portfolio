@@ -147,7 +147,7 @@ export function handleUserCommand(command) {
 
     function renderMatrix() {
       let lines = [];
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 30; i++) {
         let line = "";
         for (let j = 0; j < 34; j++) {
           line += chars[Math.floor(Math.random() * chars.length)] + " ";
