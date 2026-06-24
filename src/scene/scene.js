@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from "three";
 
 export function createScene() {
   const scene = new THREE.Scene();
@@ -8,7 +8,12 @@ export function createScene() {
 }
 
 export function createCamera() {
-  const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+  const camera = new THREE.PerspectiveCamera(
+    40,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    100,
+  );
   camera.position.set(0, 1.8, 5.5);
   camera.lookAt(0, 0.4, 0);
   return camera;

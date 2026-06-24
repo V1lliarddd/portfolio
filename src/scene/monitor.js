@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from "three";
 
 export function createMonitor(scene) {
   const monitorGroup = new THREE.Group();
@@ -24,7 +24,7 @@ export function createMonitor(scene) {
   bezelMesh.position.z = 0.8;
   monitorGroup.add(bezelMesh);
 
-  const screenGeometry = new THREE.PlaneGeometry(3.0, 2.2);
+  const screenGeometry = new THREE.PlaneGeometry(3.1, 2.3);
   const screenMaterial = new THREE.MeshStandardMaterial({
     color: 0x00ff41,
     emissive: 0x00ff41,
@@ -32,13 +32,13 @@ export function createMonitor(scene) {
     roughness: 0.05,
     metalness: 0.0,
     transparent: true,
-    opacity: 0.95,
+    opacity: 0,
   });
   const screenMesh = new THREE.Mesh(screenGeometry, screenMaterial);
-  screenMesh.position.z = 0.85;
+  screenMesh.position.z = 0.86;
   monitorGroup.add(screenMesh);
 
-  const glossGeometry = new THREE.PlaneGeometry(2.9, 2.1);
+  const glossGeometry = new THREE.PlaneGeometry(3.0, 2.2);
   const glossMaterial = new THREE.MeshStandardMaterial({
     color: 0xffffff,
     transparent: true,
@@ -48,9 +48,22 @@ export function createMonitor(scene) {
     side: THREE.DoubleSide,
   });
   const glossMesh = new THREE.Mesh(glossGeometry, glossMaterial);
-  glossMesh.position.z = 0.86;
+  glossMesh.position.z = 0.87;
   glossMesh.position.y = 0.3;
   monitorGroup.add(glossMesh);
+
+  const glowGeometry = new THREE.PlaneGeometry(3.3, 2.5);
+  const glowMaterial = new THREE.MeshStandardMaterial({
+    color: 0x00ff41,
+    emissive: 0x00ff41,
+    emissiveIntensity: 0,
+    transparent: true,
+    opacity: 0,
+    side: THREE.DoubleSide,
+  });
+  const glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
+  glowMesh.position.z = 0.84;
+  monitorGroup.add(glowMesh);
 
   const buttonPositions = [
     { x: -1.2, y: -1.2, z: 0.85 },
@@ -63,7 +76,7 @@ export function createMonitor(scene) {
     { x: 0.9, y: -1.2, z: 0.85 },
   ];
 
-  buttonPositions.forEach(pos => {
+  buttonPositions.forEach((pos) => {
     const btnGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.06, 8);
     const btnMat = new THREE.MeshStandardMaterial({
       color: 0x444444,
@@ -123,6 +136,50 @@ export function createMonitor(scene) {
 
   monitorGroup.position.set(0, 0.9, 0.3);
   scene.add(monitorGroup);
+
+  function bootAnimation() {
+    const duration = 2000;
+    const startTime = Date.now();
+    const texture = screenMesh.material.map;
+
+    function animateBoot() {
+      const elapsed = Date.now() - startTime;
+      let progress = Math.min(elapsed / duration, 1);
+
+      screenMesh.material.opacity = Math.min(progress * 1.2, 0.95);
+
+      const glowIntensity = Math.sin(progress * Math.PI * 8) * 0.1 + 0.1;
+      glowMaterial.emissiveIntensity = progress * 0.4 + glowIntensity * 0.2;
+      glowMaterial.opacity = progress * 0.15;
+
+      if (progress < 0.3) {
+        const flicker = Math.random() * 0.3;
+        screenMesh.material.opacity = Math.min(progress * 1.2 + flicker, 0.95);
+      }
+
+      if (texture) {
+        const scanOffset = (1 - progress) * 1.15;
+        texture.offset.y = -scanOffset;
+        texture.needsUpdate = true;
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(animateBoot);
+      } else {
+        screenMesh.material.opacity = 0.95;
+        glowMaterial.emissiveIntensity = 0.05;
+        glowMaterial.opacity = 0.05;
+        if (texture) {
+          texture.offset.y = 0;
+          texture.needsUpdate = true;
+        }
+      }
+    }
+
+    animateBoot();
+  }
+
+  setTimeout(bootAnimation, 500);
 
   return { monitorGroup, screenMesh };
 }

@@ -1,48 +1,50 @@
-import * as THREE from 'three';
+import * as THREE from "three";
 
 export function createScreenRenderer(terminalLines, screenMesh) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 1024;
-  canvas.height = 768;
-  const ctx = canvas.getContext('2d');
+  const canvas = document.createElement("canvas");
+  canvas.width = 2048;
+  canvas.height = 1536;
+  const ctx = canvas.getContext("2d");
+
+  let isFirstRender = true;
 
   function renderScreenTexture() {
-    ctx.fillStyle = '#0a0a0a';
+    ctx.fillStyle = "#0a0a0a";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    ctx.font = '22px "Press Start 2P", monospace';
-    ctx.textBaseline = 'top';
-    
-    let y = 30;
-    const padding = 35;
+
+    ctx.font = '28px "Press Start 2P", monospace';
+    ctx.textBaseline = "top";
+
+    let y = 50;
+    const padding = 60;
     const maxWidth = canvas.width - padding * 2;
-    const lineHeight = 34;
-    
-    const displayLines = terminalLines.slice(-14);
-    
+    const lineHeight = 48;
+
+    const displayLines = terminalLines.slice(-30);
+
     displayLines.forEach((line) => {
-      let color = '#00ff41';
+      let color = "#00ff41";
       let text = line.text;
-      
-      if (line.type === 'path') {
-        color = '#4a9eff';
-      } else if (line.type === 'error') {
-        color = '#ff5f56';
-      } else if (line.type === 'command') {
-        color = '#ffffff';
+
+      if (line.type === "path") {
+        color = "#4a9eff";
+      } else if (line.type === "error") {
+        color = "#ff5f56";
+      } else if (line.type === "command") {
+        color = "#ffffff";
         text = `root@portfolio:~$ ${text}`;
-      } else if (line.type === 'prompt') {
-        text = 'root@portfolio:~$ ' + (line.text || '');
-        color = '#00ff41';
+      } else if (line.type === "prompt") {
+        text = "root@portfolio:~$ " + (line.text || "");
+        color = "#00ff41";
       }
-      
+
       ctx.fillStyle = color;
-      
-      let currentLine = '';
-      const words = text.split(' ');
-      
+
+      let currentLine = "";
+      const words = text.split(" ");
+
       for (const word of words) {
-        const testLine = currentLine + (currentLine ? ' ' : '') + word;
+        const testLine = currentLine + (currentLine ? " " : "") + word;
         const metrics = ctx.measureText(testLine);
         if (metrics.width > maxWidth && currentLine) {
           ctx.fillText(currentLine, padding, y);
@@ -57,20 +59,24 @@ export function createScreenRenderer(terminalLines, screenMesh) {
         y += lineHeight;
       }
     });
-    
+
     const lastLine = terminalLines[terminalLines.length - 1];
-    if (lastLine && lastLine.type === 'prompt') {
+    if (lastLine && lastLine.type === "prompt") {
       const time = Date.now() / 500;
       if (Math.floor(time) % 2 === 0) {
-        ctx.fillStyle = '#00ff41';
-        const promptText = 'root@portfolio:~$ ' + lastLine.text;
+        ctx.fillStyle = "#00ff41";
+        const promptText = "root@portfolio:~$ " + (lastLine.text || "");
         const width = ctx.measureText(promptText).width;
-        ctx.fillText('▌', padding + width, y - lineHeight);
+        ctx.fillText("▌", padding + width, y - lineHeight);
       }
     }
-    
+
     if (screenMesh && screenMesh.material && screenMesh.material.map) {
       screenMesh.material.map.needsUpdate = true;
+    }
+
+    if (isFirstRender) {
+      isFirstRender = false;
     }
   }
 

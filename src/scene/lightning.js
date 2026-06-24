@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from "three";
 
 export function createLights(scene) {
   const mainLight = new THREE.DirectionalLight(0xffeedd, 3.0);

@@ -1,43 +1,6 @@
-import * as THREE from 'three';
-
-export function createWall(scene) {
-  const wallGeometry = new THREE.PlaneGeometry(12, 8);
-  const wallMaterial = new THREE.MeshStandardMaterial({
-    color: 0x1a1a22,
-    roughness: 0.8,
-    metalness: 0.1,
-    side: THREE.DoubleSide,
-  });
-  const wall = new THREE.Mesh(wallGeometry, wallMaterial);
-  wall.position.set(0, 2, -2.5);
-  wall.receiveShadow = true;
-  scene.add(wall);
-
-  const wallCanvas = document.createElement('canvas');
-  wallCanvas.width = 512;
-  wallCanvas.height = 512;
-  const wCtx = wallCanvas.getContext('2d');
-
-  wCtx.fillStyle = '#1a1a22';
-  wCtx.fillRect(0, 0, 512, 512);
-
-  wCtx.strokeStyle = '#222233';
-  wCtx.lineWidth = 2;
-  for (let row = 0; row < 8; row++) {
-    for (let col = 0; col < 6; col++) {
-      const x = col * 85 + (row % 2) * 42;
-      const y = row * 64;
-      wCtx.strokeRect(x, y, 80, 60);
-    }
-  }
-
-  const wallTexture = new THREE.CanvasTexture(wallCanvas);
-  wallTexture.wrapS = THREE.RepeatWrapping;
-  wallTexture.wrapT = THREE.RepeatWrapping;
-  wallTexture.repeat.set(2, 1.5);
-  wall.material.map = wallTexture;
-  wall.material.needsUpdate = true;
-}
+import * as THREE from "three";
+import { createPaper } from "./papper.js";
+import { createCoffee } from "./coffee.js";
 
 export function createTable(scene) {
   const tableGroup = new THREE.Group();
@@ -61,7 +24,7 @@ export function createTable(scene) {
     { x: 2.3, z: 1.3 },
   ];
 
-  legPositions.forEach(pos => {
+  legPositions.forEach((pos) => {
     const legGeometry = new THREE.CylinderGeometry(0.08, 0.08, 0.8, 8);
     const legMaterial = new THREE.MeshStandardMaterial({
       color: 0x333333,
@@ -73,7 +36,7 @@ export function createTable(scene) {
     leg.castShadow = true;
     leg.receiveShadow = true;
     tableGroup.add(leg);
-    
+
     const capGeometry = new THREE.CylinderGeometry(0.1, 0.12, 0.03, 8);
     const capMaterial = new THREE.MeshStandardMaterial({
       color: 0x222222,
@@ -99,7 +62,7 @@ export function createTable(scene) {
     { x: -2.5, z: 0, ry: Math.PI / 2 },
   ];
 
-  edgePositions.forEach(pos => {
+  edgePositions.forEach((pos) => {
     const edge = new THREE.Mesh(edgeGeometry, edgeMaterial);
     edge.position.set(pos.x, 0.04, pos.z);
     edge.rotation.y = pos.ry;
@@ -109,4 +72,26 @@ export function createTable(scene) {
   tableGroup.position.y = -0.8;
   tableGroup.position.z = -0.5;
   scene.add(tableGroup);
+}
+
+export function createWall(scene) {
+  const wallMaterial = new THREE.MeshStandardMaterial({
+    color: 0x0a0a12,
+    roughness: 0.9,
+    metalness: 0.0,
+    side: THREE.DoubleSide,
+  });
+
+  const wallGeometry = new THREE.PlaneGeometry(12, 8);
+  const wall = new THREE.Mesh(wallGeometry, wallMaterial);
+  wall.position.set(0, 2, -2.5);
+  wall.receiveShadow = true;
+  scene.add(wall);
+}
+
+export function createRoom(scene) {
+  createWall(scene);
+  createTable(scene);
+  createPaper(scene);
+  createCoffee(scene);
 }

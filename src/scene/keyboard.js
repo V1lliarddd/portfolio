@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from "three";
 
 export function createKeyboard(scene) {
   const keyboardGroup = new THREE.Group();
@@ -32,15 +32,11 @@ export function createKeyboard(scene) {
         metalness: 0.3,
       });
       const key = new THREE.Mesh(keyGeo, keyMat);
-      key.position.set(
-        row.startX + i * row.spacing,
-        row.y,
-        row.z
-      );
+      key.position.set(row.startX + i * row.spacing, row.y, row.z);
       key.castShadow = true;
       key.receiveShadow = true;
       keyboardGroup.add(key);
-      
+
       if (i % 3 === 0) {
         const highlightGeo = new THREE.PlaneGeometry(0.06, 0.04);
         const highlightMat = new THREE.MeshStandardMaterial({
@@ -54,7 +50,7 @@ export function createKeyboard(scene) {
         highlight.position.set(
           row.startX + i * row.spacing,
           row.y + 0.02,
-          row.z + 0.02
+          row.z + 0.02,
         );
         highlight.rotation.x = -0.2;
         keyboardGroup.add(highlight);
@@ -92,7 +88,7 @@ export function createKeyboard(scene) {
     { x: -0.4, z: 0.4, color: 0x4a9eff },
   ];
 
-  ledPositions.forEach(ledPos => {
+  ledPositions.forEach((ledPos) => {
     const ledGeo = new THREE.SphereGeometry(0.015, 6, 6);
     const ledMat = new THREE.MeshStandardMaterial({
       color: ledPos.color,
