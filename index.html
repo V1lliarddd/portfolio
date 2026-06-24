@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="src/style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,7 +13,11 @@
     <title>Daniil Kamaev — Terminal Portfolio</title>
   </head>
   <body>
-    <section class="intro press-start-2p-regular">
+    <!-- 3D КОНТЕЙНЕР (только для ПК) -->
+    <div id="three-container"></div>
+    
+    <!-- ТЕРМИНАЛ В DOM (только для мобильных) -->
+    <div class="terminal-wrapper mobile-only" id="terminal-wrapper">
       <div class="terminal">
         <div class="terminal-header">
           <span class="terminal-dot red"></span>
@@ -21,9 +25,24 @@
           <span class="terminal-dot green"></span>
           <span class="terminal-title">bash — Daniil Kamaev</span>
         </div>
-        <div class="terminal-body" id="terminalBody"></div>
+        <div class="terminal-body" id="terminal-body">
+          <div class="terminal-line" style="color: #4a9eff; margin-bottom: 16px;">
+            Welcome to Daniil Kamaev's Portfolio Terminal v1.0
+          </div>
+          <div class="terminal-line" style="color: #888; margin-bottom: 16px;">
+            Type "help" to see available commands.
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+        }
+      }
+    </script>
     <script src="src/main.js" type="module"></script>
   </body>
 </html>

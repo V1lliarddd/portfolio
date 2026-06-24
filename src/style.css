@@ -6,36 +6,71 @@
 
 body {
   background: #0a0a0a;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
   font-family: 'Press Start 2P', monospace;
-  padding: 20px;
 }
 
-.intro {
-  width: 100%;
-  max-width: 1000px;
+/* ============================================
+   3D КОНТЕЙНЕР (только для ПК)
+   ============================================ */
+
+#three-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+}
+
+/* ============================================
+   ТЕРМИНАЛ (только для мобильных)
+   ============================================ */
+
+.mobile-only {
+  display: none; /* Скрыт по умолчанию */
+}
+
+/* Показываем только на мобильных и планшетах */
+@media (max-width: 1024px) {
+  .mobile-only {
+    display: block;
+  }
+}
+
+.terminal-wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  width: 92%;
+  max-width: 900px;
+  max-height: 90vh;
+  pointer-events: none;
 }
 
 .terminal {
-  background: #1a1a1a;
-  border-radius: 12px;
-  border: 2px solid #333;
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.8),
-    0 0 40px rgba(0, 255, 100, 0.05);
+  pointer-events: all;
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 60px rgba(0, 255, 100, 0.05);
   overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .terminal-header {
-  background: #2d2d2d;
-  padding: 12px 16px;
+  background: rgba(45, 45, 45, 0.8);
+  padding: 12px 18px;
   display: flex;
   align-items: center;
   gap: 10px;
-  border-bottom: 2px solid #333;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .terminal-dot {
@@ -45,38 +80,36 @@ body {
   display: inline-block;
 }
 
-.terminal-dot.red {
-  background: #ff5f56;
-}
-.terminal-dot.yellow {
-  background: #ffbd2e;
-}
-.terminal-dot.green {
-  background: #27c93f;
-}
+.terminal-dot.red { background: #ff5f56; }
+.terminal-dot.yellow { background: #ffbd2e; }
+.terminal-dot.green { background: #27c93f; }
 
 .terminal-title {
-  color: #888;
+  color: rgba(136, 136, 136, 0.8);
   font-size: 10px;
   margin-left: 10px;
   font-family: 'Press Start 2P', monospace;
+  letter-spacing: 1px;
 }
 
 .terminal-body {
-  padding: 24px 28px;
-  min-height: 600px;
-  max-height: 700px;
+  padding: 20px 24px;
+  min-height: 300px;
+  max-height: 65vh;
   overflow-y: auto;
-  background: #0a0a0a;
   color: #00ff41;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.8;
+  font-family: 'Press Start 2P', monospace;
 }
 
+/* Стили для строк терминала (DOM-версия) */
 .terminal-line {
   margin-bottom: 4px;
   opacity: 1;
   animation: terminalAppear 0.2s ease forwards;
+  word-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 @keyframes terminalAppear {
@@ -90,73 +123,83 @@ body {
   }
 }
 
-.prompt {
-  color: #00ff41;
-  font-weight: bold;
-}
-
-.prompt .path {
-  color: #4a9eff;
-}
-
-.prompt .symbol {
-  color: #00ff41;
-}
-
-.command {
-  color: #fff;
-  margin-left: 8px;
-}
-
-.command-output {
-  color: #00ff41;
-  margin-left: 20px;
-  padding-left: 8px;
-  display: block;
-}
-
-.command-input {
-  color: #fff;
-  margin-left: 8px;
-  outline: none;
-  min-width: 10px;
+.cursor {
   display: inline-block;
-  caret-color: #00ff41;
-  border: none;
-  background: transparent;
+  width: 10px;
+  height: 18px;
+  background: #00ff41;
+  margin-left: 4px;
+  vertical-align: text-bottom;
+  animation: blink 0.8s infinite;
 }
 
-.command-input:focus {
-  outline: none;
-  border: none;
-  box-shadow: none;
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
 }
 
+/* Скроллбар */
 .terminal-body::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 .terminal-body::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: transparent;
 }
 
 .terminal-body::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 4px;
+  background: rgba(51, 51, 51, 0.5);
+  border-radius: 3px;
 }
 
-.terminal-body::-webkit-scrollbar-thumb:hover {
-  background: #555;
+/* ============================================
+   АДАПТИВНОСТЬ (МОБИЛЬНЫЕ)
+   ============================================ */
+
+/* Планшеты */
+@media (max-width: 1024px) and (orientation: portrait) {
+  .terminal-wrapper {
+    width: 95%;
+    max-height: 92vh;
+  }
+  .terminal-body {
+    font-size: 13px;
+    padding: 18px 20px;
+    min-height: 350px;
+    max-height: 60vh;
+  }
 }
 
+/* Телефоны */
 @media (max-width: 768px) {
+  .terminal-wrapper {
+    width: 96%;
+    max-height: 94vh;
+  }
   .terminal-body {
     font-size: 11px;
-    padding: 16px;
-    min-height: 400px;
-    max-height: 500px;
+    padding: 14px 16px;
+    min-height: 250px;
+    max-height: 55vh;
   }
   .terminal-title {
     font-size: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .terminal-body {
+    font-size: 9px;
+    padding: 10px 12px;
+    min-height: 200px;
+    max-height: 50vh;
+    line-height: 1.6;
+  }
+  .terminal-header {
+    padding: 8px 12px;
+  }
+  .terminal-dot {
+    width: 10px;
+    height: 10px;
   }
 }
