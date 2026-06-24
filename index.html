@@ -2,61 +2,52 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
       rel="stylesheet"
     />
-    <title>Daniil Kamaev</title>
-    <script type="module" crossorigin src="/portfolio/assets/index-9op08ieo.js"></script>
-    <link rel="stylesheet" crossorigin href="/portfolio/assets/index-B_NxMfPB.css">
+    <title>Daniil Kamaev Terminal Portfolio</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+        }
+      }
+    </script>
+    <script type="module" crossorigin src="/portfolio/assets/index-B1xcH4AY.js"></script>
+    <link rel="stylesheet" crossorigin href="/portfolio/assets/index-CSX8QHQw.css">
   </head>
   <body>
-    <section class="intro press-start-2p-regular">
-      <h2 class="intro__text text role"></h2>
-      <h2 class="intro__text text pop">_</h2>
-    </section>
-    <section class="sectors-scene press-start-2p-regular">
-      <div class="counter-container">
-        <div class="stat-number">
-          <span id="sector-number">0</span>
-        </div>
+    <div id="three-container"></div>
 
-        <div class="stat-label">
-          <span id="sector-name">Как все начиналось?</span>
+    <div class="terminal-wrapper mobile-only" id="terminal-wrapper">
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot red"></span>
+          <span class="terminal-dot yellow"></span>
+          <span class="terminal-dot green"></span>
+          <span class="terminal-title">bash Daniil Kamaev</span>
         </div>
+        <div class="terminal-body" id="terminal-body">
+          <div
+            class="terminal-line"
+            style="color: #4a9eff; margin-bottom: 16px"
+          >
+            Welcome to Daniil Kamaev's Portfolio Terminal v1.0
+          </div>
+          <div class="terminal-line" style="color: #888; margin-bottom: 16px">
+            Type "help" to see available commands.
+          </div>
+        </div>
+      </div>
+    </div>
 
-        <div class="stat-description" id="sector-description">
-          Началось все в 7 классе с написания print("Hello world!")
-        </div>
-      </div>
-    </section>
-    <section class="sandbox press-start-2p-regular">
-      <div class="object-container">
-        <a class="object">HTML</a>
-        <a class="object">CSS</a>
-        <a class="object">JavaScript</a>
-        <a class="object">TypeScript</a>
-        <a class="object">React</a>
-        <a class="object">GSAP</a>
-        <a class="object">Lenis</a>
-        <a class="object">ThreeJS</a>
-        <a class="object">MatterJS</a>
-        <a class="object">Figma</a>
-      </div>
-      <div class="sandbox-content">
-        <h2>Стек</h2>
-      </div>
-    </section>
-    <footer class="press-start-2p-regular">
-      <a href="https://github.com/V1lliarddd">Тут гитхаб</a>
-      <a href="https://leetcode.com/u/V1lliard/">А тут литкод</a>
-      <a>Daniil Kamaev</a>
-      <a href="https://hh.ru/resume/6b563057ff0b4853d90039ed1f7a4f67763048"
-        >Резюме на hh</a
-      >
-    </footer>
+
   </body>
 </html>

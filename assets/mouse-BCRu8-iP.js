@@ -1,0 +1,1 @@
+function e(e,t,n){document.addEventListener(`mousemove`,e=>{let r=e.clientX/window.innerWidth*2-1,i=e.clientY/window.innerHeight*2-1,a=r*n,o=-i*n*.5;t.x=a,t.y=.4+o,t.z=0})}export{e as setupMouseTracking};
