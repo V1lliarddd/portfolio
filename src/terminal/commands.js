@@ -138,6 +138,65 @@ export function handleUserCommand(command) {
     return;
   }
 
+  if (command === "cmatrix") {
+    addCommandLine("cmatrix");
+
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*()";
+    let count = 0;
+    const maxCount = 30;
+
+    function renderMatrix() {
+      let lines = [];
+      for (let i = 0; i < 10; i++) {
+        let line = "";
+        for (let j = 0; j < 34; j++) {
+          line += chars[Math.floor(Math.random() * chars.length)] + " ";
+        }
+        lines.push(line);
+      }
+
+      const currentLines = getTerminalLines();
+      const cmatrixIndex = currentLines.findIndex(
+        (line) => line.text && line.text.includes("cmatrix"),
+      );
+      const startIndex =
+        cmatrixIndex !== -1 ? cmatrixIndex + 1 : currentLines.length;
+
+      while (terminalLines.length > startIndex) {
+        terminalLines.pop();
+      }
+
+      lines.forEach((line) => {
+        terminalLines.push({ text: line, type: "output" });
+      });
+
+      if (renderScreenTexture) renderScreenTexture();
+
+      count++;
+      if (count < maxCount) {
+        setTimeout(renderMatrix, 150);
+      } else {
+        terminalLines.push({ text: "", type: "output" });
+        terminalLines.push({ text: "The Matrix has you...", type: "output" });
+        terminalLines.push({
+          text: "Follow the white rabbit.",
+          type: "output",
+        });
+        terminalLines.push({ text: "", type: "output" });
+        if (renderScreenTexture) renderScreenTexture();
+        setTimeout(() => {
+          addTerminalLine("", "prompt");
+          if (keyboardControls) {
+            keyboardControls.setWaitingForInput(true);
+          }
+        }, 300);
+      }
+    }
+
+    setTimeout(renderMatrix, 100);
+    return;
+  }
+
   if (command === "clear") {
     terminalLines.length = 0;
     terminalLines.push(

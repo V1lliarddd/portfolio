@@ -81,6 +81,33 @@ export const terminalScript = [
   },
   {
     type: "command",
+    text: "neofetch",
+    output: () => {
+      const uptime = Math.floor((Date.now() - startTime) / 1000);
+      const hours = Math.floor(uptime / 3600);
+      const minutes = Math.floor((uptime % 3600) / 60);
+
+      return [
+        "",
+        "",
+        "              DANIIL KAMAEV",
+        "           ─────────────────",
+        "           Portfolio v1.0",
+        "           Frontend Developer",
+        "",
+        "           Skills: 1337",
+        "           Uptime:  " + hours + "h " + minutes + "m",
+        "           Shell:  Terminal v1.0",
+        "           CPU:   JavaScript",
+        "",
+        "           ───  CONNECT  ───",
+        "           GitHub   LeetCode   HH.ru",
+        "",
+      ];
+    },
+  },
+  {
+    type: "command",
     text: "help",
     output: [
       "Доступные команды:",
@@ -102,7 +129,16 @@ export const terminalScript = [
       "  calc 2+2       — калькулятор",
       "  joke           — случайная шутка",
       "  fortune        — предсказание",
+      "  neofetch        — информация о системе",
+      "  cmatrix        — красная или синяя?",
     ],
+  },
+  {
+    type: "command",
+    text: "cmatrix",
+    output: () => {
+      return [];
+    },
   },
   {
     type: "command",
@@ -111,7 +147,7 @@ export const terminalScript = [
       "Даниил Камаев",
       "Москва, Россия",
       "Frontend Developer & Game Dev Enthusiast",
-      "Люблю создавать интерактивные интерфейсы"
+      "Люблю создавать интерактивные интерфейсы",
     ],
   },
   {
