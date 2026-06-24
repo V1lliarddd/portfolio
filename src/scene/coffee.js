@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import * as THREE from 'three';
 
 export function createCoffee(scene) {
   const coffeeGroup = new THREE.Group();
@@ -7,7 +7,7 @@ export function createCoffee(scene) {
   const saucerMaterial = new THREE.MeshStandardMaterial({
     color: 0x444444,
     roughness: 0.4,
-    metalness: 0.3,
+    metalness: 0.3
   });
   const saucer = new THREE.Mesh(saucerGeometry, saucerMaterial);
   saucer.position.y = 0.01;
@@ -19,7 +19,7 @@ export function createCoffee(scene) {
   const mugMaterial = new THREE.MeshStandardMaterial({
     color: 0x2a2a2a,
     roughness: 0.3,
-    metalness: 0.2,
+    metalness: 0.2
   });
   const mug = new THREE.Mesh(mugGeometry, mugMaterial);
   mug.position.y = 0.105;
@@ -31,7 +31,7 @@ export function createCoffee(scene) {
   const rimMaterial = new THREE.MeshStandardMaterial({
     color: 0x333333,
     roughness: 0.3,
-    metalness: 0.2,
+    metalness: 0.2
   });
   const rim = new THREE.Mesh(rimGeometry, rimMaterial);
   rim.position.y = 0.19;
@@ -43,7 +43,7 @@ export function createCoffee(scene) {
     new THREE.Vector3(0.22, 0.12, 0),
     new THREE.Vector3(0.24, 0.14, 0.02),
     new THREE.Vector3(0.22, 0.16, 0.04),
-    new THREE.Vector3(0.14, 0.18, 0.04),
+    new THREE.Vector3(0.14, 0.18, 0.04)
   ];
   const handleCurve = new THREE.CatmullRomCurve3(handlePoints);
   const handleGeometry = new THREE.TubeGeometry(
@@ -51,12 +51,12 @@ export function createCoffee(scene) {
     16,
     0.02,
     8,
-    false,
+    false
   );
   const handleMaterial = new THREE.MeshStandardMaterial({
     color: 0x2a2a2a,
     roughness: 0.3,
-    metalness: 0.2,
+    metalness: 0.2
   });
   const handle = new THREE.Mesh(handleGeometry, handleMaterial);
   handle.castShadow = true;
@@ -68,7 +68,7 @@ export function createCoffee(scene) {
     color: 0x3a1a0a,
     roughness: 0.1,
     metalness: 0.0,
-    side: THREE.DoubleSide,
+    side: THREE.DoubleSide
   });
   const coffee = new THREE.Mesh(coffeeGeometry, coffeeMaterial);
   coffee.position.y = 0.188;
@@ -84,7 +84,7 @@ export function createCoffee(scene) {
     metalness: 0.0,
     transparent: true,
     opacity: 0.5,
-    side: THREE.DoubleSide,
+    side: THREE.DoubleSide
   });
   const foam = new THREE.Mesh(foamGeometry, foamMaterial);
   foam.position.set(-0.02, 0.19, 0.02);
@@ -95,7 +95,7 @@ export function createCoffee(scene) {
     { x: 0.04, z: -0.03, scale: 0.6 },
     { x: -0.05, z: -0.04, scale: 0.5 },
     { x: 0.03, z: 0.05, scale: 0.4 },
-    { x: -0.06, z: 0.02, scale: 0.3 },
+    { x: -0.06, z: 0.02, scale: 0.3 }
   ];
   smallFoamPositions.forEach((pos) => {
     const smallFoam = new THREE.Mesh(
@@ -106,8 +106,8 @@ export function createCoffee(scene) {
         metalness: 0.0,
         transparent: true,
         opacity: 0.3,
-        side: THREE.DoubleSide,
-      }),
+        side: THREE.DoubleSide
+      })
     );
     smallFoam.position.set(pos.x, 0.19, pos.z);
     smallFoam.scale.set(pos.scale, pos.scale, 1);
@@ -122,7 +122,7 @@ export function createCoffee(scene) {
     { x: -0.02, z: 0.03, delay: 0, speed: 0.8 },
     { x: 0.03, z: -0.02, delay: 0.5, speed: 0.6 },
     { x: -0.01, z: -0.03, delay: 1.0, speed: 0.7 },
-    { x: 0.04, z: 0.02, delay: 0.3, speed: 0.9 },
+    { x: 0.04, z: 0.02, delay: 0.3, speed: 0.9 }
   ];
 
   steamPositions.forEach((pos) => {
@@ -132,7 +132,7 @@ export function createCoffee(scene) {
       transparent: true,
       opacity: 0.12,
       side: THREE.DoubleSide,
-      depthWrite: false,
+      depthWrite: false
     });
     const steam = new THREE.Mesh(steamGeo, steamMat);
     steam.position.set(pos.x, 0.22, pos.z);

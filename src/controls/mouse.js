@@ -1,5 +1,5 @@
 export function setupMouseTracking(camera, targetLookAt, MAX_LOOK_ANGLE) {
-  document.addEventListener("mousemove", (event) => {
+  document.addEventListener('mousemove', (event) => {
     const x = (event.clientX / window.innerWidth) * 2 - 1;
     const y = (event.clientY / window.innerHeight) * 2 - 1;
 

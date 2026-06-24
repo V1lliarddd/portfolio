@@ -1,5 +1,5 @@
-import { terminalScript, projects, contacts } from "./data.js";
-import { triggerRestEffect } from "../effects/restEffect.js";
+import { terminalScript, projects, contacts } from './data.js';
+import { triggerRestEffect } from '../effects/restEffect.js';
 
 let terminalLines = [];
 let renderScreenTexture = null;
@@ -17,13 +17,13 @@ export function getTerminalLines() {
   return terminalLines;
 }
 
-function addTerminalLine(text, type = "output") {
+function addTerminalLine(text, type = 'output') {
   terminalLines.push({ text, type });
   if (renderScreenTexture) renderScreenTexture();
 }
 
 function addCommandLine(command) {
-  terminalLines.push({ text: command, type: "command" });
+  terminalLines.push({ text: command, type: 'command' });
   if (renderScreenTexture) renderScreenTexture();
 }
 
@@ -39,7 +39,7 @@ function executeCommand(command, outputLines, delay = 200) {
     setTimeout(() => {
       outputLines.forEach((line, index) => {
         setTimeout(() => {
-          addTerminalLine(line, "output");
+          addTerminalLine(line, 'output');
           if (index === outputLines.length - 1) {
             resolve();
           }
@@ -50,59 +50,60 @@ function executeCommand(command, outputLines, delay = 200) {
 }
 
 function handleCdCommand(args) {
-  if (args.startsWith("./projects/")) {
-    const projectName = args.replace("./projects/", "").trim();
+  if (args.startsWith('./projects/')) {
+    const projectName = args.replace('./projects/', '').trim();
     if (!projectName) {
-      addTerminalLine("Укажите имя проекта", "error");
+      addTerminalLine('Укажите имя проекта', 'error');
       return;
     }
     const project = projects[projectName];
     if (!project) {
-      addTerminalLine(`Проект "${projectName}" не найден`, "error");
+      addTerminalLine(`Проект "${projectName}" не найден`, 'error');
       addTerminalLine(
-        `Доступные: ${Object.keys(projects).join(", ")}`,
-        "output",
+        `Доступные: ${Object.keys(projects).join(', ')}`,
+        'output'
       );
       return;
     }
-    window.open(project.url, "_blank");
-    addTerminalLine(`Открываю "${projectName}"...`, "path");
-    addTerminalLine(`${project.url}`, "output");
+    window.open(project.url, '_blank');
+    addTerminalLine(`Открываю "${projectName}"...`, 'path');
+    addTerminalLine(`${project.url}`, 'output');
     return;
   }
 
-  if (args.startsWith("./contacts/")) {
-    const contactName = args.replace("./contacts/", "").trim();
+  if (args.startsWith('./contacts/')) {
+    const contactName = args.replace('./contacts/', '').trim();
     if (!contactName) {
-      addTerminalLine("Укажите имя контакта", "error");
+      addTerminalLine('Укажите имя контакта', 'error');
       return;
     }
     const contact = contacts[contactName];
     if (!contact) {
-      addTerminalLine(`Контакт "${contactName}" не найден`, "error");
+      addTerminalLine(`Контакт "${contactName}" не найден`, 'error');
       addTerminalLine(
-        `Доступные: ${Object.keys(contacts).join(", ")}`,
-        "output",
+        `Доступные: ${Object.keys(contacts).join(', ')}`,
+        'output'
       );
       return;
     }
-    window.open(contact.url, "_blank");
-    addTerminalLine(`Открываю "${contactName}"...`, "path");
-    addTerminalLine(`${contact.icon} ${contact.url}`, "output");
+    window.open(contact.url, '_blank');
+    addTerminalLine(`Открываю "${contactName}"...`, 'path');
+    addTerminalLine(`${contact.icon} ${contact.url}`, 'output');
     return;
   }
 
   addTerminalLine(
-    "Использование: cd ./projects/{имя} или cd ./contacts/{имя}",
-    "error",
+    'Использование: cd ./projects/{имя} или cd ./contacts/{имя}',
+    'error'
   );
 }
 
 export function handleUserCommand(command) {
-  if (command.startsWith("cd ")) {
+  command = command.toLowerCase().trim();
+  if (command.startsWith('cd ')) {
     handleCdCommand(command.substring(3).trim());
     setTimeout(() => {
-      addTerminalLine("", "prompt");
+      addTerminalLine('', 'prompt');
       if (keyboardControls) {
         keyboardControls.setWaitingForInput(true);
       }
@@ -110,17 +111,17 @@ export function handleUserCommand(command) {
     return;
   }
 
-  if (command === "rest") {
-    addCommandLine("rest");
+  if (command === 'rest') {
+    addCommandLine('rest');
 
     const messages = [
-      "Не могу больше. Нужно отдохнуть...",
-      "Уффф. Так на чем я там остановился?",
+      'Не могу больше. Нужно отдохнуть...',
+      'Уффф. Так на чем я там остановился?'
     ];
 
     messages.forEach((msg, index) => {
       setTimeout(() => {
-        addTerminalLine(msg, "output");
+        addTerminalLine(msg, 'output');
       }, index * 700);
     });
 
@@ -129,7 +130,7 @@ export function handleUserCommand(command) {
     }, 400);
 
     setTimeout(() => {
-      addTerminalLine("", "prompt");
+      addTerminalLine('', 'prompt');
       if (keyboardControls) {
         keyboardControls.setWaitingForInput(true);
       }
@@ -138,26 +139,26 @@ export function handleUserCommand(command) {
     return;
   }
 
-  if (command === "cmatrix") {
-    addCommandLine("cmatrix");
+  if (command === 'cmatrix') {
+    addCommandLine('cmatrix');
 
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*()";
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*()';
     let count = 0;
     const maxCount = 30;
 
     function renderMatrix() {
       let lines = [];
       for (let i = 0; i < 30; i++) {
-        let line = "";
+        let line = '';
         for (let j = 0; j < 34; j++) {
-          line += chars[Math.floor(Math.random() * chars.length)] + " ";
+          line += chars[Math.floor(Math.random() * chars.length)] + ' ';
         }
         lines.push(line);
       }
 
       const currentLines = getTerminalLines();
       const cmatrixIndex = currentLines.findIndex(
-        (line) => line.text && line.text.includes("cmatrix"),
+        (line) => line.text && line.text.includes('cmatrix')
       );
       const startIndex =
         cmatrixIndex !== -1 ? cmatrixIndex + 1 : currentLines.length;
@@ -167,7 +168,7 @@ export function handleUserCommand(command) {
       }
 
       lines.forEach((line) => {
-        terminalLines.push({ text: line, type: "output" });
+        terminalLines.push({ text: line, type: 'output' });
       });
 
       if (renderScreenTexture) renderScreenTexture();
@@ -176,16 +177,16 @@ export function handleUserCommand(command) {
       if (count < maxCount) {
         setTimeout(renderMatrix, 150);
       } else {
-        terminalLines.push({ text: "", type: "output" });
-        terminalLines.push({ text: "The Matrix has you...", type: "output" });
+        terminalLines.push({ text: '', type: 'output' });
+        terminalLines.push({ text: 'The Matrix has you...', type: 'output' });
         terminalLines.push({
-          text: "Follow the white rabbit.",
-          type: "output",
+          text: 'Follow the white rabbit.',
+          type: 'output'
         });
-        terminalLines.push({ text: "", type: "output" });
+        terminalLines.push({ text: '', type: 'output' });
         if (renderScreenTexture) renderScreenTexture();
         setTimeout(() => {
-          addTerminalLine("", "prompt");
+          addTerminalLine('', 'prompt');
           if (keyboardControls) {
             keyboardControls.setWaitingForInput(true);
           }
@@ -197,18 +198,18 @@ export function handleUserCommand(command) {
     return;
   }
 
-  if (command === "clear") {
+  if (command === 'clear') {
     terminalLines.length = 0;
     terminalLines.push(
       {
         text: "Welcome to Daniil Kamaev's Portfolio Terminal v1.0",
-        type: "path",
+        type: 'path'
       },
-      { text: 'Type "help" to see available commands.', type: "path" },
+      { text: 'Type "help" to see available commands.', type: 'path' }
     );
     if (renderScreenTexture) renderScreenTexture();
     setTimeout(() => {
-      terminalLines.push({ text: "", type: "prompt" });
+      terminalLines.push({ text: '', type: 'prompt' });
       if (renderScreenTexture) renderScreenTexture();
       if (keyboardControls) {
         keyboardControls.setWaitingForInput(true);
@@ -217,15 +218,15 @@ export function handleUserCommand(command) {
     return;
   }
 
-  const parts = command.split(" ");
+  const parts = command.split(' ');
   const cmdName = parts[0];
-  const args = parts.slice(1).join(" ");
+  const args = parts.slice(1).join(' ');
 
   const found = terminalScript.find((cmd) => cmd.text === cmdName);
 
   if (found) {
     let outputLines;
-    if (typeof found.output === "function") {
+    if (typeof found.output === 'function') {
       outputLines = found.output(args);
     } else {
       outputLines = found.output;
@@ -236,10 +237,10 @@ export function handleUserCommand(command) {
     setTimeout(() => {
       outputLines.forEach((line, index) => {
         setTimeout(() => {
-          addTerminalLine(line, "output");
+          addTerminalLine(line, 'output');
           if (index === outputLines.length - 1) {
             setTimeout(() => {
-              addTerminalLine("", "prompt");
+              addTerminalLine('', 'prompt');
               if (keyboardControls) {
                 keyboardControls.setWaitingForInput(true);
               }
@@ -251,9 +252,9 @@ export function handleUserCommand(command) {
     return;
   }
 
-  addTerminalLine(`Command not found: ${command}. Type 'help'`, "error");
+  addTerminalLine(`Command not found: ${command}. Type 'help'`, 'error');
   setTimeout(() => {
-    addTerminalLine("", "prompt");
+    addTerminalLine('', 'prompt');
     if (keyboardControls) {
       keyboardControls.setWaitingForInput(true);
     }
@@ -261,11 +262,11 @@ export function handleUserCommand(command) {
 }
 
 export async function loadTerminal() {
-  addTerminalLine("Welcome to Daniil Kamaev's Portfolio Terminal v1.0", "path");
-  addTerminalLine('Type "help" to see available commands.', "path");
+  addTerminalLine("Welcome to Daniil Kamaev's Portfolio Terminal v1.0", 'path');
+  addTerminalLine('Type "help" to see available commands.', 'path');
 
   setTimeout(() => {
-    addTerminalLine("", "prompt");
+    addTerminalLine('', 'prompt');
     if (keyboardControls) {
       keyboardControls.setWaitingForInput(true);
     }
