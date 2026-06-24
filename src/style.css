@@ -12,10 +12,6 @@ body {
   font-family: 'Press Start 2P', monospace;
 }
 
-/* ============================================
-   3D КОНТЕЙНЕР (только для ПК)
-   ============================================ */
-
 #three-container {
   position: fixed;
   top: 0;
@@ -25,15 +21,10 @@ body {
   z-index: 0;
 }
 
-/* ============================================
-   ТЕРМИНАЛ (только для мобильных)
-   ============================================ */
-
 .mobile-only {
-  display: none; /* Скрыт по умолчанию */
+  display: none;
 }
 
-/* Показываем только на мобильных и планшетах */
 @media (max-width: 1024px) {
   .mobile-only {
     display: block;
@@ -103,7 +94,6 @@ body {
   font-family: 'Press Start 2P', monospace;
 }
 
-/* Стили для строк терминала (DOM-версия) */
 .terminal-line {
   margin-bottom: 4px;
   opacity: 1;
@@ -138,7 +128,6 @@ body {
   51%, 100% { opacity: 0; }
 }
 
-/* Скроллбар */
 .terminal-body::-webkit-scrollbar {
   width: 6px;
 }
@@ -152,11 +141,6 @@ body {
   border-radius: 3px;
 }
 
-/* ============================================
-   АДАПТИВНОСТЬ (МОБИЛЬНЫЕ)
-   ============================================ */
-
-/* Планшеты */
 @media (max-width: 1024px) and (orientation: portrait) {
   .terminal-wrapper {
     width: 95%;
@@ -170,7 +154,6 @@ body {
   }
 }
 
-/* Телефоны */
 @media (max-width: 768px) {
   .terminal-wrapper {
     width: 96%;

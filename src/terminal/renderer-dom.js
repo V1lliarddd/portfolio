@@ -29,7 +29,6 @@ export function createDomRenderer(terminalLines, terminalBody) {
       lineElement.textContent = text;
       
       if (line.type === 'prompt' && line.text === '') {
-        // Показываем курсор для промпта
         const cursor = document.createElement('span');
         cursor.className = 'cursor';
         cursor.textContent = '▌';
