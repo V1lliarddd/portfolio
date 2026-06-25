@@ -2,10 +2,12 @@ import { handleUserCommand, getTerminalLines } from './commands.js';
 
 export function createDomRenderer(terminalLines, terminalBody) {
   let inputElement = null;
+  let currentInputValue = '';
 
   function renderTerminal() {
     if (!terminalBody) return;
 
+    const scrollTop = terminalBody.scrollTop;
     terminalBody.innerHTML = '';
 
     const isMobile = window.innerWidth < 768;
@@ -39,6 +41,9 @@ export function createDomRenderer(terminalLines, terminalBody) {
       lineElement.style.color = color;
 
       if (line.type === 'prompt' && line.text === '') {
+        // Сохраняем значение перед перерисовкой
+        const savedValue = currentInputValue;
+
         const input = document.createElement('input');
         input.type = 'text';
         input.className = 'command-input';
@@ -63,10 +68,20 @@ export function createDomRenderer(terminalLines, terminalBody) {
         lineElement.appendChild(input);
         inputElement = input;
 
+        if (savedValue) {
+          input.value = savedValue;
+          currentInputValue = savedValue;
+        }
+
+        input.addEventListener('input', (e) => {
+          currentInputValue = e.target.value;
+        });
+
         input.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') {
             const command = input.value.trim();
             if (command) {
+              currentInputValue = '';
               const lines = getTerminalLines();
               if (lines.length > 0) {
                 const lastLine = lines[lines.length - 1];
@@ -75,7 +90,6 @@ export function createDomRenderer(terminalLines, terminalBody) {
                 }
               }
               handleUserCommand(command);
-              input.value = '';
               renderTerminal();
             }
           }
@@ -83,16 +97,19 @@ export function createDomRenderer(terminalLines, terminalBody) {
 
         input.addEventListener('blur', () => {
           setTimeout(() => {
-            if (document.activeElement !== input) {
-              input.focus();
+            if (inputElement && document.activeElement !== inputElement) {
+              inputElement.focus();
             }
           }, 10);
         });
 
-        // Фокус при загрузке
         setTimeout(() => {
-          input.focus();
-        }, 300);
+          if (inputElement) {
+            inputElement.focus();
+            const len = inputElement.value.length;
+            inputElement.setSelectionRange(len, len);
+          }
+        }, 100);
       } else {
         lineElement.textContent = text;
       }
@@ -100,12 +117,18 @@ export function createDomRenderer(terminalLines, terminalBody) {
       terminalBody.appendChild(lineElement);
     });
 
-    terminalBody.scrollTop = terminalBody.scrollHeight;
+    if (scrollTop > 0) {
+      terminalBody.scrollTop = scrollTop;
+    } else {
+      terminalBody.scrollTop = terminalBody.scrollHeight;
+    }
   }
 
   function focusInput() {
     if (inputElement) {
       inputElement.focus();
+      const len = inputElement.value.length;
+      inputElement.setSelectionRange(len, len);
     }
   }
 

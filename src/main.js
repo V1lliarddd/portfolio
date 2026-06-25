@@ -197,7 +197,7 @@ if (isDesktopDevice) {
       terminalBody.addEventListener(
         'touchstart',
         () => {
-          setTimeout(() => focusInput(), 100);
+          setTimeout(() => focusInput(), 200);
         },
         { passive: true }
       );
