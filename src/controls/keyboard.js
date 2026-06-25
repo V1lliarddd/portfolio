@@ -18,31 +18,29 @@ export function setupKeyboardInput(renderFn) {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      
+
       if (isWaitingForInput) {
         const command = currentInput.trim();
-        
+
         if (command) {
           isWaitingForInput = false;
-          
+
           const terminalLines = getTerminalLines();
           const lastLine = terminalLines[terminalLines.length - 1];
           if (lastLine && lastLine.type === 'prompt') {
-            // Удаляем промпт, но НЕ добавляем команду здесь
-            // Команда будет добавлена в handleUserCommand
             terminalLines.pop();
           }
-          
+
           handleUserCommand(command);
           currentInput = '';
         }
       }
       return;
     }
-    
+
     if (isWaitingForInput) {
       e.preventDefault();
-      
+
       if (e.key === 'Backspace') {
         currentInput = currentInput.slice(0, -1);
         updateCurrentPrompt();

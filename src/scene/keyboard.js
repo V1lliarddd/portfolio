@@ -101,7 +101,5 @@ export function createKeyboard(scene) {
   });
 
   keyboardGroup.position.set(0, -0.72, 2);
-  // keyboardGroup.rotation.x = -0.2;
-  // keyboardGroup.rotation.z = 0;
   scene.add(keyboardGroup);
 }
