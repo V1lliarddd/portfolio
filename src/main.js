@@ -174,7 +174,7 @@ if (isDesktopDevice) {
 
   if (terminalBody) {
     import('./terminal/renderer-dom.js').then(({ createDomRenderer }) => {
-      const { renderTerminal } = createDomRenderer(
+      const { renderTerminal, focusInput } = createDomRenderer(
         getTerminalLines(),
         terminalBody
       );
@@ -188,18 +188,16 @@ if (isDesktopDevice) {
 
       loadTerminal();
 
+      // Фокус при клике
       terminalBody.addEventListener('click', () => {
-        const input = terminalBody.querySelector('.command-input');
-        if (input) input.focus();
+        focusInput();
       });
 
+      // Фокус при касании
       terminalBody.addEventListener(
         'touchstart',
         () => {
-          const input = terminalBody.querySelector('.command-input');
-          if (input) {
-            setTimeout(() => input.focus(), 100);
-          }
+          setTimeout(() => focusInput(), 100);
         },
         { passive: true }
       );

@@ -1,70 +1,18 @@
 import { handleUserCommand, getTerminalLines } from './commands.js';
 
 export function createDomRenderer(terminalLines, terminalBody) {
+  let inputElement = null;
+
   function renderTerminal() {
     if (!terminalBody) return;
 
     terminalBody.innerHTML = '';
 
     const isMobile = window.innerWidth < 768;
-    const fontSize = isMobile ? '14px' : '14px';
+    const fontSize = isMobile ? '16px' : '14px';
     const lineHeight = isMobile ? '1.8' : '1.8';
 
-    const filteredLines = [];
-    let skipOutput = false;
-
-    for (const line of terminalLines) {
-      if (line.type === 'command') {
-        const cmdText = line.text.trim().split(' ')[0];
-        if (cmdText === 'cowsay' || cmdText === 'neofetch') {
-          filteredLines.push(line);
-          const lastLine = filteredLines[filteredLines.length - 1];
-          if (!lastLine || lastLine.text !== '  Доступно только в ПК версии') {
-            filteredLines.push({
-              text: '  Доступно только в ПК версии',
-              type: 'output'
-            });
-          }
-          skipOutput = true;
-          continue;
-        }
-      }
-
-      if (skipOutput && line.type === 'output') {
-        const isCowsay =
-          line.text.includes('┌─') ||
-          line.text.includes('^__^') ||
-          line.text.includes('(oo)') ||
-          line.text.includes('\\   ^__^') ||
-          line.text.includes('\\  (oo)');
-        const isNeofetch =
-          line.text.includes('DANIIL KAMAEV') ||
-          line.text.includes('Skills:') ||
-          line.text.includes('Uptime:') ||
-          line.text.includes('Shell:') ||
-          line.text.includes('CPU:') ||
-          line.text.includes('GitHub') ||
-          line.text.includes('LeetCode');
-        if (isCowsay || isNeofetch) {
-          continue;
-        }
-        skipOutput = false;
-      }
-
-      if (
-        line.type === 'output' &&
-        line.text === '  Доступно только в ПК версии'
-      ) {
-        const prevLine = filteredLines[filteredLines.length - 1];
-        if (prevLine && prevLine.text === '  Доступно только в ПК версии') {
-          continue;
-        }
-      }
-
-      filteredLines.push(line);
-    }
-
-    const displayLines = filteredLines.slice(-50);
+    const displayLines = terminalLines.slice(-50);
 
     displayLines.forEach((line) => {
       const lineElement = document.createElement('div');
@@ -113,6 +61,7 @@ export function createDomRenderer(terminalLines, terminalBody) {
         input.autofocus = true;
         input.placeholder = ' ';
         lineElement.appendChild(input);
+        inputElement = input;
 
         input.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') {
@@ -132,6 +81,15 @@ export function createDomRenderer(terminalLines, terminalBody) {
           }
         });
 
+        input.addEventListener('blur', () => {
+          setTimeout(() => {
+            if (document.activeElement !== input) {
+              input.focus();
+            }
+          }, 10);
+        });
+
+        // Фокус при загрузке
         setTimeout(() => {
           input.focus();
         }, 300);
@@ -145,5 +103,11 @@ export function createDomRenderer(terminalLines, terminalBody) {
     terminalBody.scrollTop = terminalBody.scrollHeight;
   }
 
-  return { renderTerminal };
+  function focusInput() {
+    if (inputElement) {
+      inputElement.focus();
+    }
+  }
+
+  return { renderTerminal, focusInput };
 }
