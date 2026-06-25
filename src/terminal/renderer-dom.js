@@ -6,7 +6,6 @@ export function createDomRenderer(terminalLines, terminalBody) {
   function renderTerminal() {
     if (!terminalBody) return;
 
-    const scrollTop = terminalBody.scrollTop;
     terminalBody.innerHTML = '';
 
     const isMobile = window.innerWidth < 768;
@@ -90,7 +89,6 @@ export function createDomRenderer(terminalLines, terminalBody) {
           e.stopPropagation();
         });
 
-        // iOS: постоянный фокус
         input.addEventListener('blur', (e) => {
           e.preventDefault();
           setTimeout(() => {
@@ -100,12 +98,9 @@ export function createDomRenderer(terminalLines, terminalBody) {
           }, 50);
         });
 
-        input.addEventListener('focus', () => {});
-
         setTimeout(() => {
           if (inputElement) {
             inputElement.focus();
-            // Ставим курсор в конец
             const len = inputElement.value.length;
             if (inputElement.setSelectionRange) {
               inputElement.setSelectionRange(len, len);
@@ -119,11 +114,8 @@ export function createDomRenderer(terminalLines, terminalBody) {
       terminalBody.appendChild(lineElement);
     });
 
-    if (scrollTop > 0) {
-      terminalBody.scrollTop = scrollTop;
-    } else {
-      terminalBody.scrollTop = terminalBody.scrollHeight;
-    }
+    // ВСЕГДА прокручиваем вниз
+    terminalBody.scrollTop = terminalBody.scrollHeight;
   }
 
   function focusInput() {
