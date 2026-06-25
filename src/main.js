@@ -188,16 +188,18 @@ if (isDesktopDevice) {
 
       loadTerminal();
 
-      // Фокус при клике
-      terminalBody.addEventListener('click', () => {
-        focusInput();
+      terminalBody.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'INPUT') {
+          focusInput();
+        }
       });
 
-      // Фокус при касании
       terminalBody.addEventListener(
         'touchstart',
-        () => {
-          setTimeout(() => focusInput(), 200);
+        (e) => {
+          if (e.target.tagName !== 'INPUT') {
+            setTimeout(() => focusInput(), 300);
+          }
         },
         { passive: true }
       );

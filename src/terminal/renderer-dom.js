@@ -2,7 +2,6 @@ import { handleUserCommand, getTerminalLines } from './commands.js';
 
 export function createDomRenderer(terminalLines, terminalBody) {
   let inputElement = null;
-  let currentInputValue = '';
 
   function renderTerminal() {
     if (!terminalBody) return;
@@ -41,8 +40,9 @@ export function createDomRenderer(terminalLines, terminalBody) {
       lineElement.style.color = color;
 
       if (line.type === 'prompt' && line.text === '') {
-        // Сохраняем значение перед перерисовкой
-        const savedValue = currentInputValue;
+        const container = document.createElement('div');
+        container.style.display = 'inline-block';
+        container.style.width = '100%';
 
         const input = document.createElement('input');
         input.type = 'text';
@@ -62,26 +62,19 @@ export function createDomRenderer(terminalLines, terminalBody) {
           -webkit-appearance: none;
           appearance: none;
           min-height: 30px;
+          position: relative;
+          z-index: 10;
         `;
         input.autofocus = true;
         input.placeholder = ' ';
-        lineElement.appendChild(input);
+        container.appendChild(input);
+        lineElement.appendChild(container);
         inputElement = input;
-
-        if (savedValue) {
-          input.value = savedValue;
-          currentInputValue = savedValue;
-        }
-
-        input.addEventListener('input', (e) => {
-          currentInputValue = e.target.value;
-        });
 
         input.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') {
             const command = input.value.trim();
             if (command) {
-              currentInputValue = '';
               const lines = getTerminalLines();
               if (lines.length > 0) {
                 const lastLine = lines[lines.length - 1];
@@ -90,26 +83,35 @@ export function createDomRenderer(terminalLines, terminalBody) {
                 }
               }
               handleUserCommand(command);
+              input.value = '';
               renderTerminal();
             }
           }
+          e.stopPropagation();
         });
 
-        input.addEventListener('blur', () => {
+        // iOS: постоянный фокус
+        input.addEventListener('blur', (e) => {
+          e.preventDefault();
           setTimeout(() => {
-            if (inputElement && document.activeElement !== inputElement) {
+            if (inputElement) {
               inputElement.focus();
             }
-          }, 10);
+          }, 50);
         });
+
+        input.addEventListener('focus', () => {});
 
         setTimeout(() => {
           if (inputElement) {
             inputElement.focus();
+            // Ставим курсор в конец
             const len = inputElement.value.length;
-            inputElement.setSelectionRange(len, len);
+            if (inputElement.setSelectionRange) {
+              inputElement.setSelectionRange(len, len);
+            }
           }
-        }, 100);
+        }, 300);
       } else {
         lineElement.textContent = text;
       }
@@ -128,7 +130,9 @@ export function createDomRenderer(terminalLines, terminalBody) {
     if (inputElement) {
       inputElement.focus();
       const len = inputElement.value.length;
-      inputElement.setSelectionRange(len, len);
+      if (inputElement.setSelectionRange) {
+        inputElement.setSelectionRange(len, len);
+      }
     }
   }
 
